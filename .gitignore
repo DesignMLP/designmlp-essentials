@@ -1,0 +1,2 @@
+# Composer dependencies: installed with "composer install", shipped only inside the release zip.
+/vendor/

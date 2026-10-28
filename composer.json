@@ -1,0 +1,23 @@
+{
+  "name": "designmlp/designmlp-essentials",
+  "description": "Recurring fixes for DesignMLP websites, split into modules that can be enabled one by one.",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "homepage": "https://github.com/DesignMLP/designmlp-essentials",
+  "require": {
+    "php": ">=8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "DesignMLP\\Essentials\\": "includes/",
+      "DesignMLP\\Essentials\\Modules\\": "modules/"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "8.2"
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  }
+}

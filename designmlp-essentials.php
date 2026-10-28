@@ -24,3 +24,21 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'DESIGNMLP_ESSENTIALS_VERSION', '0.1.0' );
 define( 'DESIGNMLP_ESSENTIALS_FILE', __FILE__ );
+
+// The Composer autoloader is created by "composer install" and shipped inside the plugin zip.
+// If it is missing (e.g. the plugin was installed from the GitHub source code), show a notice instead of a fatal error.
+if ( ! is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	add_action(
+		'admin_notices',
+		function () {
+			echo '<div class="notice notice-error"><p>'
+				. esc_html__( 'DesignMLP Essentials cannot start: the vendor folder is missing. Run "composer install" in the plugin folder.', 'designmlp-essentials' )
+				. '</p></div>';
+		}
+	);
+	return;
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
+( new Plugin() )->boot();
