@@ -32,6 +32,12 @@ interface Module {
 	public function is_available(): bool;
 
 	/**
+	 * Whether the module is enabled when the settings have never been saved for it
+	 * (first installation, or a module added by an update).
+	 */
+	public function is_enabled_by_default(): bool;
+
+	/**
 	 * Hooks the module into WordPress. Called only if the module is available and enabled.
 	 */
 	public function init(): void;

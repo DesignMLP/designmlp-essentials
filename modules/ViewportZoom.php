@@ -52,6 +52,13 @@ final class ViewportZoom implements Module {
 		return false;
 	}
 
+	/**
+	 * Enabled by default: installing the plugin is enough to fix the problem.
+	 */
+	public function is_enabled_by_default(): bool {
+		return true;
+	}
+
 	public function init(): void {
 		// remove_action() returns true only if the theme's function was hooked: the correct meta tag is added
 		// only in that case, so a site never ends up with two viewport meta tags.
