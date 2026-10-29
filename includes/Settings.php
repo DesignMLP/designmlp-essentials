@@ -12,9 +12,16 @@ defined( 'ABSPATH' ) || exit;
 final class Settings {
 
 	/**
-	 * Name of the option saved in the database, e.g. array( 'modules' => array( 'viewport-zoom' => true ) ).
+	 * Option shared by all DesignMLP plugins: each plugin keeps its settings in its own section,
+	 * e.g. array( 'essentials' => array( 'modules' => array( 'viewport-zoom' => true ) ) ).
+	 * A plugin must read and write only its own section and keep the others unchanged.
 	 */
 	public const OPTION = 'designmlp_settings';
+
+	/**
+	 * Section of this plugin inside the shared option.
+	 */
+	public const SECTION = 'essentials';
 
 	/**
 	 * Slug of the settings page (admin URL: options-general.php?page=designmlp-essentials).
@@ -22,9 +29,9 @@ final class Settings {
 	private const PAGE = 'designmlp-essentials';
 
 	/**
-	 * Settings group used by the Settings API to save the form.
+	 * Settings group used by the Settings API to save the form of this plugin.
 	 */
-	private const GROUP = 'designmlp_settings_group';
+	private const GROUP = 'designmlp_essentials';
 
 	/**
 	 * Capability needed to see and save the settings: administrators.
@@ -98,13 +105,19 @@ final class Settings {
 	}
 
 	/**
-	 * Builds the value to save from the submitted form: only known modules, only true/false.
+	 * Builds the value to save. WordPress calls this every time the shared option is saved, also by other
+	 * DesignMLP plugins: it changes only this plugin's section, and only when this plugin's form was submitted.
 	 *
-	 * @param mixed $input Submitted values.
-	 * @return array<string, array<string, bool>>
+	 * @param mixed $input Value being saved.
+	 * @return mixed
 	 */
-	public function sanitize( $input ): array {
-		$submitted = ( is_array( $input ) && isset( $input['modules'] ) && is_array( $input['modules'] ) ) ? $input['modules'] : array();
+	public function sanitize( $input ) {
+		$is_this_form = is_array( $input ) && ! empty( $input[ self::SECTION ]['submitted'] );
+		if ( ! $is_this_form ) {
+			return $input;
+		}
+
+		$submitted = ( isset( $input[ self::SECTION ]['modules'] ) && is_array( $input[ self::SECTION ]['modules'] ) ) ? $input[ self::SECTION ]['modules'] : array();
 
 		$modules = array();
 		foreach ( $this->modules as $module ) {
@@ -120,7 +133,30 @@ final class Settings {
 			$modules[ $id ] = ! empty( $submitted[ $id ] );
 		}
 
-		return array( 'modules' => $modules );
+		// Keep the sections of the other DesignMLP plugins as they are.
+		$value                  = $this->get_option_value();
+		$value[ self::SECTION ] = array( 'modules' => $modules );
+
+		return $value;
+	}
+
+	/**
+	 * Removes this plugin's section from the shared option, and the whole option if no other section is left.
+	 * Used by uninstall.php.
+	 */
+	public static function delete_section(): void {
+		$value = get_option( self::OPTION );
+		if ( ! is_array( $value ) ) {
+			return;
+		}
+
+		unset( $value[ self::SECTION ] );
+
+		if ( empty( $value ) ) {
+			delete_option( self::OPTION );
+		} else {
+			update_option( self::OPTION, $value );
+		}
 	}
 
 	/**
@@ -151,6 +187,8 @@ final class Settings {
 
 			<form action="options.php" method="post">
 				<?php settings_fields( self::GROUP ); ?>
+				<?php // Marks the form of this plugin, so sanitize() changes only this plugin's section. ?>
+				<input type="hidden" name="<?php echo esc_attr( self::OPTION . '[' . self::SECTION . '][submitted]' ); ?>" value="1" />
 
 				<table class="form-table" role="presentation">
 					<tbody>
@@ -167,7 +205,7 @@ final class Settings {
 									<input
 										type="checkbox"
 										id="<?php echo esc_attr( $field_id ); ?>"
-										name="<?php echo esc_attr( self::OPTION . '[modules][' . $id . ']' ); ?>"
+										name="<?php echo esc_attr( self::OPTION . '[' . self::SECTION . '][modules][' . $id . ']' ); ?>"
 										value="1"
 										<?php
 										// A module not available is shown unchecked because it is not running; its saved
@@ -195,17 +233,28 @@ final class Settings {
 	}
 
 	/**
-	 * Saved state of the modules, as id => enabled.
+	 * Saved state of the modules of this plugin, as id => enabled.
 	 *
 	 * @return array<string, bool>
 	 */
 	private function get_saved_modules(): array {
-		$saved = get_option( self::OPTION, array() );
+		$value = $this->get_option_value();
 
-		if ( is_array( $saved ) && isset( $saved['modules'] ) && is_array( $saved['modules'] ) ) {
-			return $saved['modules'];
+		if ( isset( $value[ self::SECTION ]['modules'] ) && is_array( $value[ self::SECTION ]['modules'] ) ) {
+			return $value[ self::SECTION ]['modules'];
 		}
 
 		return array();
+	}
+
+	/**
+	 * Current value of the shared option, always as an array.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_option_value(): array {
+		$value = get_option( self::OPTION, array() );
+
+		return is_array( $value ) ? $value : array();
 	}
 }
