@@ -1,0 +1,30 @@
+# Files and folders NOT included in the plugin zip distributed to the websites.
+# Used when building the release zip (see the release process). The zip must be built
+# after "composer install --no-dev", so vendor/ contains only what the plugin needs.
+
+# Git and editor configuration
+/.git
+/.github
+/.gitignore
+/.gitattributes
+/.editorconfig
+/.distignore
+/.vscode
+
+# Local development only (excluded from Git too)
+/_copia_nei_siti_local.cmd
+/_NON_COPIARE_PROGETTO_GIT_.txt
+
+# Composer: the autoloader is already in vendor/
+/composer.json
+/composer.lock
+
+# Documentation for GitHub (readme.txt is the documentation for WordPress)
+/README.md
+/CHANGELOG.md
+
+# Development tools (future: code checks, tests, build)
+/phpcs.xml
+/phpcs.xml.dist
+/tests
+/node_modules
