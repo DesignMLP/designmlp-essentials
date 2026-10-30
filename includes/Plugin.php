@@ -54,7 +54,7 @@ final class Plugin {
 	 * Loads the translations shipped in the languages folder.
 	 */
 	public function load_textdomain(): void {
-		load_plugin_textdomain( 'designmlp-essentials', false, dirname( plugin_basename( DESIGNMLP_ESSENTIALS_FILE ) ) . '/languages' );
+		load_plugin_textdomain( DESIGNMLP_ESSENTIALS_TEXT_DOMAIN, false, dirname( plugin_basename( DESIGNMLP_ESSENTIALS_FILE ) ) . DESIGNMLP_ESSENTIALS_LANGUAGES_PATH );
 	}
 
 	/**

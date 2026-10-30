@@ -15,8 +15,6 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: designmlp-essentials.php
-#: includes/Settings.php:77
-#: includes/Settings.php:78
 msgid "DesignMLP Essentials"
 msgstr "DesignMLP Essentials"
 
@@ -29,27 +27,27 @@ msgstr "Correzioni ricorrenti per i siti DesignMLP, divise in moduli attivabili 
 msgid "DesignMLP Essentials cannot start: the vendor folder is missing. Run \"composer install\" in the plugin folder."
 msgstr "DesignMLP Essentials non può avviarsi: manca la cartella vendor. Esegui \"composer install\" nella cartella del plugin."
 
-#: includes/Settings.php:134
+#: includes/Settings.php:152
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: includes/Settings.php:150
+#: includes/Settings.php:170
 msgid "Enable or disable each module. A module not available on this site stays inactive."
 msgstr "Attiva o disattiva ogni modulo. Un modulo non disponibile su questo sito resta inattivo."
 
-#: includes/Settings.php:179
+#: includes/Settings.php:201
 msgid "Enabled"
 msgstr "Attivo"
 
-#: includes/Settings.php:183
+#: includes/Settings.php:205
 msgid "Not running at the moment: the module finds nothing on this site that it can fix."
 msgstr "Al momento non in funzione: su questo sito il modulo non trova niente che possa correggere."
 
-#: modules/ViewportZoom.php:36
+#: modules/ViewportZoom.php:60
 msgid "Viewport zoom"
 msgstr "Zoom del viewport"
 
-#: modules/ViewportZoom.php:40
+#: modules/ViewportZoom.php:64
 msgid "Removes the zoom limits (maximum-scale, user-scalable) from the viewport meta tag added by the theme, so visitors can zoom the page."
 msgstr "Rimuove i limiti allo zoom (maximum-scale, user-scalable) dal meta tag viewport aggiunto dal tema, così i visitatori possono ingrandire la pagina."
 

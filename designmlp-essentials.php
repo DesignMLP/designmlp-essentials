@@ -22,12 +22,12 @@ namespace DesignMLP\Essentials;
 // Prevent direct access: this file must be loaded by WordPress.
 defined( 'ABSPATH' ) || exit;
 
-define( 'DESIGNMLP_ESSENTIALS_VERSION', '0.1.0' );
-define( 'DESIGNMLP_ESSENTIALS_FILE', __FILE__ );
+// All the values chosen for the plugin (keep the header above equal to them).
+require_once __DIR__ . '/constants.php';
 
 // The Composer autoloader is created by "composer install" and shipped inside the plugin zip.
 // If it is missing (e.g. the plugin was installed from the GitHub source code), show a notice instead of a fatal error.
-if ( ! is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+if ( ! is_readable( DESIGNMLP_ESSENTIALS_AUTOLOADER ) ) {
 	add_action(
 		'admin_notices',
 		function () {
@@ -39,6 +39,6 @@ if ( ! is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
 	return;
 }
 
-require __DIR__ . '/vendor/autoload.php';
+require DESIGNMLP_ESSENTIALS_AUTOLOADER;
 
 ( new Plugin() )->boot();

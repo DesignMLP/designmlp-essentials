@@ -17,6 +17,30 @@ defined( 'ABSPATH' ) || exit;
 
 final class ViewportZoom implements Module {
 
+	// ---------------------------------------------------------------------------------------------
+	// Module identity (every module has these). The name and description are translated texts,
+	// so they are written out in get_name() and get_description() just below.
+	// ---------------------------------------------------------------------------------------------
+
+	/**
+	 * Unique identifier, used in the saved settings.
+	 */
+	private const ID = 'viewport-zoom';
+
+	// ---------------------------------------------------------------------------------------------
+	// Values specific to how this module works.
+	// ---------------------------------------------------------------------------------------------
+
+	/**
+	 * Content of the viewport meta tag printed instead of the theme's one (changeable with DESIGNMLP_ESSENTIALS_FILTER_VIEWPORT).
+	 */
+	private const DEFAULT_CONTENT = 'width=device-width, initial-scale=1';
+
+	/**
+	 * Priority on wp_head of the corrected meta tag: early in the head, as browsers expect it.
+	 */
+	private const PRIORITY = 1;
+
 	/**
 	 * Known theme functions that print a viewport meta tag on wp_head, with their hook priority.
 	 * To support another theme, add its function here.
@@ -29,7 +53,7 @@ final class ViewportZoom implements Module {
 	);
 
 	public function get_id(): string {
-		return 'viewport-zoom';
+		return self::ID;
 	}
 
 	public function get_name(): string {
@@ -70,7 +94,7 @@ final class ViewportZoom implements Module {
 		}
 
 		if ( $removed ) {
-			add_action( 'wp_head', array( $this, 'print_viewport_meta' ), 1 );
+			add_action( 'wp_head', array( $this, 'print_viewport_meta' ), self::PRIORITY );
 		}
 	}
 
@@ -83,7 +107,7 @@ final class ViewportZoom implements Module {
 		 *
 		 * @param string $content Default "width=device-width, initial-scale=1".
 		 */
-		$content = apply_filters( 'designmlp_viewport_content', 'width=device-width, initial-scale=1' );
+		$content = apply_filters( DESIGNMLP_ESSENTIALS_FILTER_VIEWPORT, self::DEFAULT_CONTENT );
 
 		echo '<meta name="viewport" content="' . esc_attr( $content ) . '" />' . "\n";
 	}

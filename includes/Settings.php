@@ -2,6 +2,10 @@
 /**
  * Settings page (Settings > DesignMLP Essentials) and saved state of the modules.
  *
+ * The settings are saved in the option shared by all DesignMLP plugins (DESIGNMLP_ESSENTIALS_OPTION),
+ * in this plugin's section (DESIGNMLP_ESSENTIALS_OPTION_SECTION). A plugin must read and write only its own
+ * section and keep the others unchanged.
+ *
  * @package DesignMLP\Essentials
  */
 
@@ -10,33 +14,6 @@ namespace DesignMLP\Essentials;
 defined( 'ABSPATH' ) || exit;
 
 final class Settings {
-
-	/**
-	 * Option shared by all DesignMLP plugins: each plugin keeps its settings in its own section,
-	 * e.g. array( 'essentials' => array( 'modules' => array( 'viewport-zoom' => true ) ) ).
-	 * A plugin must read and write only its own section and keep the others unchanged.
-	 */
-	public const OPTION = 'designmlp_settings';
-
-	/**
-	 * Section of this plugin inside the shared option.
-	 */
-	public const SECTION = 'essentials';
-
-	/**
-	 * Slug of the settings page (admin URL: options-general.php?page=designmlp-essentials).
-	 */
-	private const PAGE = 'designmlp-essentials';
-
-	/**
-	 * Settings group used by the Settings API to save the form of this plugin.
-	 */
-	private const GROUP = 'designmlp_essentials';
-
-	/**
-	 * Capability needed to see and save the settings: administrators.
-	 */
-	private const CAPABILITY = 'manage_options';
 
 	/**
 	 * All the modules of the plugin.
@@ -77,14 +54,14 @@ final class Settings {
 	}
 
 	/**
-	 * Adds the page under Settings.
+	 * Adds the page under Settings. Page title and menu item are the plugin name, which is not translated.
 	 */
 	public function add_page(): void {
 		add_options_page(
-			__( 'DesignMLP Essentials', 'designmlp-essentials' ),
-			__( 'DesignMLP Essentials', 'designmlp-essentials' ),
-			self::CAPABILITY,
-			self::PAGE,
+			DESIGNMLP_ESSENTIALS_NAME,
+			DESIGNMLP_ESSENTIALS_NAME,
+			DESIGNMLP_ESSENTIALS_CAPABILITY,
+			DESIGNMLP_ESSENTIALS_SLUG,
 			array( $this, 'render_page' )
 		);
 	}
@@ -94,8 +71,8 @@ final class Settings {
 	 */
 	public function register_setting(): void {
 		register_setting(
-			self::GROUP,
-			self::OPTION,
+			DESIGNMLP_ESSENTIALS_SETTINGS_GROUP,
+			DESIGNMLP_ESSENTIALS_OPTION,
 			array(
 				'type'              => 'array',
 				'sanitize_callback' => array( $this, 'sanitize' ),
@@ -112,12 +89,17 @@ final class Settings {
 	 * @return mixed
 	 */
 	public function sanitize( $input ) {
-		$is_this_form = is_array( $input ) && ! empty( $input[ self::SECTION ]['submitted'] );
-		if ( ! $is_this_form ) {
+		$section = is_array( $input ) && isset( $input[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ] ) && is_array( $input[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ] )
+			? $input[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ]
+			: array();
+
+		if ( empty( $section[ DESIGNMLP_ESSENTIALS_OPTION_KEY_SUBMITTED ] ) ) {
 			return $input;
 		}
 
-		$submitted = ( isset( $input[ self::SECTION ]['modules'] ) && is_array( $input[ self::SECTION ]['modules'] ) ) ? $input[ self::SECTION ]['modules'] : array();
+		$submitted = ( isset( $section[ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ] ) && is_array( $section[ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ] ) )
+			? $section[ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ]
+			: array();
 
 		$modules = array();
 		foreach ( $this->modules as $module ) {
@@ -134,8 +116,8 @@ final class Settings {
 		}
 
 		// Keep the sections of the other DesignMLP plugins as they are.
-		$value                  = $this->get_option_value();
-		$value[ self::SECTION ] = array( 'modules' => $modules );
+		$value = self::get_option_value();
+		$value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ] = array( DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES => $modules );
 
 		return $value;
 	}
@@ -145,17 +127,17 @@ final class Settings {
 	 * Used by uninstall.php.
 	 */
 	public static function delete_section(): void {
-		$value = get_option( self::OPTION );
+		$value = get_option( DESIGNMLP_ESSENTIALS_OPTION );
 		if ( ! is_array( $value ) ) {
 			return;
 		}
 
-		unset( $value[ self::SECTION ] );
+		unset( $value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ] );
 
 		if ( empty( $value ) ) {
-			delete_option( self::OPTION );
+			delete_option( DESIGNMLP_ESSENTIALS_OPTION );
 		} else {
-			update_option( self::OPTION, $value );
+			update_option( DESIGNMLP_ESSENTIALS_OPTION, $value );
 		}
 	}
 
@@ -166,7 +148,7 @@ final class Settings {
 	 * @return string[]
 	 */
 	public function add_settings_link( array $links ): array {
-		$url  = admin_url( 'options-general.php?page=' . self::PAGE );
+		$url  = add_query_arg( 'page', DESIGNMLP_ESSENTIALS_SLUG, admin_url( 'options-general.php' ) );
 		$link = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Settings', 'designmlp-essentials' ) . '</a>';
 
 		array_unshift( $links, $link );
@@ -177,25 +159,27 @@ final class Settings {
 	 * Prints the settings page: one checkbox per module.
 	 */
 	public function render_page(): void {
-		if ( ! current_user_can( self::CAPABILITY ) ) {
+		if ( ! current_user_can( DESIGNMLP_ESSENTIALS_CAPABILITY ) ) {
 			return;
 		}
+
+		$field_name = DESIGNMLP_ESSENTIALS_OPTION . '[' . DESIGNMLP_ESSENTIALS_OPTION_SECTION . ']';
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<p><?php esc_html_e( 'Enable or disable each module. A module not available on this site stays inactive.', 'designmlp-essentials' ); ?></p>
 
 			<form action="options.php" method="post">
-				<?php settings_fields( self::GROUP ); ?>
+				<?php settings_fields( DESIGNMLP_ESSENTIALS_SETTINGS_GROUP ); ?>
 				<?php // Marks the form of this plugin, so sanitize() changes only this plugin's section. ?>
-				<input type="hidden" name="<?php echo esc_attr( self::OPTION . '[' . self::SECTION . '][submitted]' ); ?>" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $field_name . '[' . DESIGNMLP_ESSENTIALS_OPTION_KEY_SUBMITTED . ']' ); ?>" value="1" />
 
 				<table class="form-table" role="presentation">
 					<tbody>
 					<?php foreach ( $this->modules as $module ) : ?>
 						<?php
 						$id        = $module->get_id();
-						$field_id  = 'designmlp-module-' . $id;
+						$field_id  = DESIGNMLP_ESSENTIALS_SLUG . '-' . $id;
 						$available = $module->is_available();
 						?>
 						<tr>
@@ -205,7 +189,7 @@ final class Settings {
 									<input
 										type="checkbox"
 										id="<?php echo esc_attr( $field_id ); ?>"
-										name="<?php echo esc_attr( self::OPTION . '[' . self::SECTION . '][modules][' . $id . ']' ); ?>"
+										name="<?php echo esc_attr( $field_name . '[' . DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES . '][' . $id . ']' ); ?>"
 										value="1"
 										<?php
 										// A module not available is shown unchecked because it is not running; its saved
@@ -238,10 +222,11 @@ final class Settings {
 	 * @return array<string, bool>
 	 */
 	private function get_saved_modules(): array {
-		$value = $this->get_option_value();
+		$value = self::get_option_value();
 
-		if ( isset( $value[ self::SECTION ]['modules'] ) && is_array( $value[ self::SECTION ]['modules'] ) ) {
-			return $value[ self::SECTION ]['modules'];
+		if ( isset( $value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ][ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ] )
+			&& is_array( $value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ][ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ] ) ) {
+			return $value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ][ DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES ];
 		}
 
 		return array();
@@ -252,8 +237,8 @@ final class Settings {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function get_option_value(): array {
-		$value = get_option( self::OPTION, array() );
+	private static function get_option_value(): array {
+		$value = get_option( DESIGNMLP_ESSENTIALS_OPTION, array() );
 
 		return is_array( $value ) ? $value : array();
 	}
