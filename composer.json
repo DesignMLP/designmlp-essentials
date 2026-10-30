@@ -5,7 +5,8 @@
   "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/DesignMLP/designmlp-essentials",
   "require": {
-    "php": ">=8.2"
+    "php": ">=8.2",
+    "yahnis-elsts/plugin-update-checker": "^5.7"
   },
   "autoload": {
     "psr-4": {

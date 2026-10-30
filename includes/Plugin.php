@@ -45,6 +45,9 @@ final class Plugin {
 		if ( is_admin() ) {
 			$this->settings->boot();
 		}
+
+		// Not only in the admin: WordPress also checks for updates in its scheduled tasks (cron).
+		( new Updater() )->boot();
 	}
 
 	/**
