@@ -1,0 +1,45 @@
+# Builds the plugin zip when a release is published on GitHub and attaches it to the release.
+# The release must be prepared first on the PC with "php bin/prepare-release.php X.Y.Z" (see the release checklist).
+# The zip is the one that the websites download through Plugin Update Checker (includes/Updater.php).
+
+name: Release zip
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write # needed to attach the zip to the release
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    env:
+      ZIP_NAME: designmlp-essentials.zip # = DESIGNMLP_ESSENTIALS_RELEASE_ZIP in constants.php
+      PLUGIN_DIR: designmlp-essentials # = DESIGNMLP_ESSENTIALS_SLUG in constants.php
+    steps:
+      - name: Get the code of the release
+        uses: actions/checkout@v4
+
+      - name: Install PHP 8.2 (minimum version of the plugin) and WP-CLI
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer, wp-cli
+
+      - name: Check that the plugin header and readme.txt match constants.php and the release tag
+        run: php bin/check-release.php "${GITHUB_REF_NAME#v}"
+
+      - name: Install the libraries needed by the plugin (no development tools)
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+      - name: Build the zip, leaving out the files listed in .distignore
+        run: |
+          wp package install wp-cli/dist-archive-command
+          wp dist-archive . "${RUNNER_TEMP}/${ZIP_NAME}" --plugin-dirname="${PLUGIN_DIR}"
+          unzip -l "${RUNNER_TEMP}/${ZIP_NAME}"
+
+      - name: Attach the zip to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${GITHUB_REF_NAME}" "${RUNNER_TEMP}/${ZIP_NAME}" --clobber

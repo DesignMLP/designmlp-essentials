@@ -23,6 +23,9 @@
 /README.md
 /CHANGELOG.md
 
+# Release scripts (run on the PC and by the release workflow, not needed on the websites)
+/bin
+
 # Development tools (future: code checks, tests, build)
 /phpcs.xml
 /phpcs.xml.dist
