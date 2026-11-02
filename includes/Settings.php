@@ -41,6 +41,17 @@ final class Settings {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_filter( 'plugin_action_links_' . plugin_basename( DESIGNMLP_ESSENTIALS_FILE ), array( $this, 'add_settings_link' ) );
+
+		// Saving goes through wp-admin/options.php, which uses its own capability unless told otherwise:
+		// use the same one as the page, so who can see the page and who can save are decided in one place.
+		add_filter( 'option_page_capability_' . DESIGNMLP_ESSENTIALS_SETTINGS_GROUP, array( $this, 'get_capability' ) );
+	}
+
+	/**
+	 * Capability needed to see the settings page and to save it.
+	 */
+	public function get_capability(): string {
+		return DESIGNMLP_ESSENTIALS_CAPABILITY;
 	}
 
 	/**
