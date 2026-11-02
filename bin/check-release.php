@@ -18,6 +18,10 @@ $errors = array();
 
 /**
  * Reads a "Name: value" line from a file header (plugin header or readme.txt).
+ *
+ * @param string $file  File to read.
+ * @param string $field Name of the field, e.g. "Version".
+ * @return string|null Value of the field, or null if the field is missing.
  */
 function designmlp_read_header_field( string $file, string $field ): ?string {
 	$content = (string) file_get_contents( $file );
@@ -45,13 +49,13 @@ $checks = array(
 
 foreach ( $checks as list( $file, $field, $expected ) ) {
 	$found = designmlp_read_header_field( $file, $field );
-	if ( $found !== $expected ) {
+	if ( $expected !== $found ) {
 		$errors[] = sprintf( '%s, "%s": found "%s", expected "%s" (constants.php)', basename( $file ), $field, $found ?? '(missing)', $expected );
 	}
 }
 
 $wanted = $argv[1] ?? null;
-if ( null !== $wanted && $wanted !== DESIGNMLP_ESSENTIALS_VERSION ) {
+if ( null !== $wanted && DESIGNMLP_ESSENTIALS_VERSION !== $wanted ) {
 	$errors[] = sprintf( 'Release version "%s" is different from DESIGNMLP_ESSENTIALS_VERSION "%s"', $wanted, DESIGNMLP_ESSENTIALS_VERSION );
 }
 

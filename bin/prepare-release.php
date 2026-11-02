@@ -18,6 +18,8 @@ $version = $argv[1] ?? '';
 
 /**
  * Stops with a message and exit code 1.
+ *
+ * @param string $message What went wrong.
  */
 function designmlp_fail( string $message ): void {
 	fwrite( STDERR, 'Prepare release FAILED: ' . $message . "\n" );
@@ -26,6 +28,10 @@ function designmlp_fail( string $message ): void {
 
 /**
  * Replaces exactly one match of a regular expression in a file.
+ *
+ * @param string $file        File to change.
+ * @param string $pattern     Regular expression to find.
+ * @param string $replacement Replacement text.
  */
 function designmlp_replace_in_file( string $file, string $pattern, string $replacement ): void {
 	$content = (string) file_get_contents( $file );
@@ -62,8 +68,10 @@ designmlp_replace_in_file( $readme_file, '/^(Stable tag:[ \t]+).+$/m', '${1}' . 
 $changelog = preg_replace( '/^## \[Unreleased\]\s*\n/m', "## [Unreleased]\n\n## [" . $version . '] - ' . gmdate( 'Y-m-d' ) . "\n\n", $changelog, 1 );
 file_put_contents( $changelog_file, $changelog );
 
-// 3. readme.txt: "Changelog" section rebuilt from CHANGELOG.md, newest version first.
-//    "## [1.0.0] - 2026-11-05" becomes "= 1.0.0 =", "### Added" + "- text" becomes "* Added: text".
+/*
+ * 3. readme.txt: "Changelog" section rebuilt from CHANGELOG.md, newest version first.
+ *    "## [1.0.0] - 2026-11-05" becomes "= 1.0.0 =", "### Added" + "- text" becomes "* Added: text".
+ */
 preg_match_all( '/^## \[(\d+\.\d+\.\d+)\][^\n]*\n(.*?)(?=^## \[|\z)/ms', $changelog, $versions, PREG_SET_ORDER );
 $blocks = array();
 foreach ( $versions as $entry ) {

@@ -9,6 +9,9 @@ namespace DesignMLP\Essentials;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Starts the plugin: translations, modules, settings page and updates.
+ */
 final class Plugin {
 
 	/**
@@ -20,9 +23,14 @@ final class Plugin {
 
 	/**
 	 * Settings page and saved state of the modules.
+	 *
+	 * @var Settings
 	 */
 	private Settings $settings;
 
+	/**
+	 * Creates the list of modules and the settings.
+	 */
 	public function __construct() {
 		// Add new modules to this list.
 		$this->modules = array(

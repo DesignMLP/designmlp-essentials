@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!--
+	Code checks with PHP_CodeSniffer: run "vendor/bin/phpcs" (report) or "vendor/bin/phpcbf" (automatic fixes)
+	in the plugin folder. Also used by the PHP Sniffer & Beautifier extension of VS Code.
+-->
+<ruleset name="DesignMLP Essentials">
+	<description>WordPress Coding Standards and PHP 8.2 compatibility for DesignMLP Essentials.</description>
+
+	<!-- What to check. -->
+	<file>.</file>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<!-- Translations compiled by WP-CLI (wp i18n make-php). -->
+	<exclude-pattern>/languages/*</exclude-pattern>
+	<arg name="extensions" value="php"/>
+
+	<!-- Output: show the rule of each message, colours, check files in parallel. -->
+	<arg value="sp"/>
+	<arg name="colors"/>
+	<arg name="parallel" value="8"/>
+
+	<!-- Minimum versions of the plugin (EP3 step 5). -->
+	<config name="testVersion" value="8.2-"/>
+	<config name="minimum_wp_version" value="7.0"/>
+
+	<!-- Code that works on PHP 8.2, not only on the PHP of the development PC. -->
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- WordPress Coding Standards (Core, Docs, Extra). -->
+	<rule ref="WordPress">
+		<!-- File names follow PSR-4 (Plugin.php), as decided with Composer, not class-plugin.php. -->
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+
+	<!-- Text domain of the plugin (EP3 step 4). -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="designmlp-essentials"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Prefixes for everything global (EP3 step 3): namespace for code, designmlp for the rest. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="designmlp"/>
+				<element value="DesignMLP\Essentials"/>
+			</property>
+		</properties>
+		<!-- Release scripts run in the terminal, without WordPress: their variables are not shared with other code. -->
+		<exclude-pattern>/bin/*</exclude-pattern>
+	</rule>
+
+	<!--
+		Release scripts (bin/) run in the terminal, without WordPress: the rules written for code running inside
+		WordPress do not apply (WordPress file functions, escaping output for HTML, WordPress global variables).
+		They are still checked for code style and PHP 8.2 compatibility.
+	-->
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>/bin/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>/bin/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>/bin/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<exclude-pattern>/bin/*</exclude-pattern>
+	</rule>
+</ruleset>

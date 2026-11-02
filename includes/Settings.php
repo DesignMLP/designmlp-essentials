@@ -13,6 +13,9 @@ namespace DesignMLP\Essentials;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Settings page of the plugin and enabled/disabled state of each module.
+ */
 final class Settings {
 
 	/**
@@ -23,6 +26,8 @@ final class Settings {
 	private array $modules;
 
 	/**
+	 * Keeps the list of modules shown in the settings page.
+	 *
 	 * @param Module[] $modules All the modules of the plugin.
 	 */
 	public function __construct( array $modules ) {
@@ -116,7 +121,7 @@ final class Settings {
 		}
 
 		// Keep the sections of the other DesignMLP plugins as they are.
-		$value = self::get_option_value();
+		$value                                        = self::get_option_value();
 		$value[ DESIGNMLP_ESSENTIALS_OPTION_SECTION ] = array( DESIGNMLP_ESSENTIALS_OPTION_KEY_MODULES => $modules );
 
 		return $value;

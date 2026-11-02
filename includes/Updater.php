@@ -14,6 +14,9 @@ use YahnisElsts\PluginUpdateChecker\v5p7\Vcs\Api;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Checks the GitHub releases of the plugin and offers the updates to WordPress.
+ */
 final class Updater {
 
 	/**

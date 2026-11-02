@@ -15,6 +15,9 @@ use DesignMLP\Essentials\Module;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Viewport zoom module: replaces the theme's viewport meta tag with one without zoom limits.
+ */
 final class ViewportZoom implements Module {
 
 	// ---------------------------------------------------------------------------------------------
@@ -52,14 +55,23 @@ final class ViewportZoom implements Module {
 		'et_add_viewport_meta' => 10,
 	);
 
+	/**
+	 * Unique identifier of the module.
+	 */
 	public function get_id(): string {
 		return self::ID;
 	}
 
+	/**
+	 * Name shown in the settings page (translated).
+	 */
 	public function get_name(): string {
 		return __( 'Viewport zoom', 'designmlp-essentials' );
 	}
 
+	/**
+	 * Description shown in the settings page (translated).
+	 */
 	public function get_description(): string {
 		return __( 'Removes the zoom limits (maximum-scale, user-scalable) from the viewport meta tag added by the theme, so visitors can zoom the page.', 'designmlp-essentials' );
 	}
@@ -83,6 +95,9 @@ final class ViewportZoom implements Module {
 		return true;
 	}
 
+	/**
+	 * Removes the theme's viewport meta tag and adds the corrected one.
+	 */
 	public function init(): void {
 		// remove_action() returns true only if the theme's function was hooked: the correct meta tag is added
 		// only in that case, so a site never ends up with two viewport meta tags.
