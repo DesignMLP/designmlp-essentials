@@ -3,7 +3,7 @@ Tags: divi, accessibility, viewport, zoom
 Requires at least: 7.0
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.1.0
+Stable tag: 0.9.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -46,9 +46,9 @@ They are removed from the database. Deactivating the plugin keeps them.
 
 == Changelog ==
 
-= Unreleased =
-* Module system: each module can be enabled or disabled and declares its default state.
-* Settings page (Settings > DesignMLP Essentials), for administrators only, with a Settings link in the plugins list.
-* Viewport zoom module: replaces the viewport meta tag added by the theme (Divi 4 and Divi 5) with one without `maximum-scale` and `user-scalable`, so visitors can zoom the page. The content can be changed with the `designmlp_viewport_content` filter.
-* Italian translation.
-* Plugin settings removed from the database when the plugin is deleted.
+= 0.9.0 =
+* Added: Module system: each module can be enabled or disabled and declares its default state.
+* Added: Settings page (Settings > DesignMLP Essentials), for administrators only, with a Settings link in the plugins list.
+* Added: Viewport zoom module: replaces the viewport meta tag added by the theme (Divi 4 and Divi 5) with one without `maximum-scale` and `user-scalable`, so visitors can zoom the page. The content can be changed with the `designmlp_viewport_content` filter.
+* Added: Italian translation.
+* Added: Plugin settings removed from the database when the plugin is deleted.

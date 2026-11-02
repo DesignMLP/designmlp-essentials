@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Plugin.
 define( 'DESIGNMLP_ESSENTIALS_NAME', 'DesignMLP Essentials' );
-define( 'DESIGNMLP_ESSENTIALS_VERSION', '0.1.0' );
+define( 'DESIGNMLP_ESSENTIALS_VERSION', '0.9.0' );
 define( 'DESIGNMLP_ESSENTIALS_SLUG', 'designmlp-essentials' );
 define( 'DESIGNMLP_ESSENTIALS_FILE', __DIR__ . '/' . DESIGNMLP_ESSENTIALS_SLUG . '.php' );
 define( 'DESIGNMLP_ESSENTIALS_AUTOLOADER', __DIR__ . '/vendor/autoload.php' );
