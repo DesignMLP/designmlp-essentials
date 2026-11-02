@@ -3,7 +3,7 @@ Tags: divi, accessibility, viewport, zoom
 Requires at least: 7.0
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 0.9.0
+Stable tag: 0.9.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -45,6 +45,9 @@ Yes. Modules that need a specific theme stay inactive when that theme is not act
 They are removed from the database. Deactivating the plugin keeps them.
 
 == Changelog ==
+
+= 0.9.1 =
+* Fixed: Release zip: built with rsync and zip, because the previous build tool could not be installed. No changes to the plugin code; 0.9.0 was published without a zip.
 
 = 0.9.0 =
 * Added: Module system: each module can be enabled or disabled and declares its default state.

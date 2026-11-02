@@ -19,13 +19,13 @@ jobs:
       PLUGIN_DIR: designmlp-essentials # = DESIGNMLP_ESSENTIALS_SLUG in constants.php
     steps:
       - name: Get the code of the release
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Install PHP 8.2 (minimum version of the plugin) and WP-CLI
+      - name: Install PHP 8.2 (minimum version of the plugin) and Composer
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: composer, wp-cli
+          tools: composer
 
       - name: Check that the plugin header and readme.txt match constants.php and the release tag
         run: php bin/check-release.php "${GITHUB_REF_NAME#v}"
@@ -33,10 +33,15 @@ jobs:
       - name: Install the libraries needed by the plugin (no development tools)
         run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
+      # rsync reads .distignore with the same rules (lines starting with "/" are relative to the plugin folder,
+      # "#" lines are comments). Not "wp dist-archive": installing it fails with the new GitHub token format
+      # and its current version needs WP-CLI 3 (2026-11-02).
       - name: Build the zip, leaving out the files listed in .distignore
         run: |
-          wp package install wp-cli/dist-archive-command
-          wp dist-archive . "${RUNNER_TEMP}/${ZIP_NAME}" --plugin-dirname="${PLUGIN_DIR}"
+          mkdir -p "${RUNNER_TEMP}/build/${PLUGIN_DIR}"
+          rsync -a --exclude-from=.distignore ./ "${RUNNER_TEMP}/build/${PLUGIN_DIR}/"
+          cd "${RUNNER_TEMP}/build"
+          zip -r -q "${RUNNER_TEMP}/${ZIP_NAME}" "${PLUGIN_DIR}"
           unzip -l "${RUNNER_TEMP}/${ZIP_NAME}"
 
       - name: Attach the zip to the release

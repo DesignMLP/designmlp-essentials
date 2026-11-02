@@ -3,7 +3,7 @@
  * Plugin Name:       DesignMLP Essentials
  * Plugin URI:        https://github.com/DesignMLP/designmlp-essentials
  * Description:       Recurring fixes for DesignMLP websites, split into modules that can be enabled one by one.
- * Version:           0.9.0
+ * Version:           0.9.1
  * Requires at least: 7.0
  * Requires PHP:      8.2
  * Author:            DesignMLP

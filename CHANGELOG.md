@@ -8,6 +8,12 @@ The "Changelog" section of `readme.txt` is generated from this file when a versi
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-02
+
+### Fixed
+
+- Release zip: built with rsync and zip, because the previous build tool could not be installed. No changes to the plugin code; 0.9.0 was published without a zip.
+
 ## [0.9.0] - 2026-11-02
 
 ### Added
